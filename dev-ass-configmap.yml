@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dev-ass-configmap
+  labels:
+    app: sample-app
+data:
+  App_ENV: "production"
+  LOG_LEVEL: "info"  

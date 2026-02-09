@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: envconfdemo
+spec:
+  containers:
+  - name: demoencomap
+    image: nginx
+    env:
+    - name: my-evn
+      valueFrom:
+        configMapKeyRef:
+          name: my-democonfig
+          key: mykey
+
+

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-ns
+  namespace: myns
+spec:
+  containers:
+  - name: demons
+    image: nginx
+    ports:
+    - containerPort: 80
+

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: volumedemo
+spec:
+  containers:
+  - name: myvaluedemo
+    image: busybox
+    command: ["sh", "-c", "cat /etc/config/* && sleep 3600"]
+    volumeMounts:
+      - name: myvolumecre
+        mountPath: /etc/config
+  volumes:
+    - name: myvolumecre
+      configMap:
+        name: my-democonfig 
