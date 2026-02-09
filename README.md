@@ -1,117 +1,140 @@
-<<<<<<< HEAD
-# Todo Summary Assistant
+TodoSummaryAssistant – DevOps Enabled Deployment
+Overview
 
-This is my local changes version.
-Updated README from the original repo.
+TodoSummaryAssistant is a backend application that summarizes TODO items.
+This repository has been enhanced with a production-grade DevOps delivery pipeline, focusing on CI/CD automation, containerization, Kubernetes deployment, and GitOps-based operations.
 
-## Description
 
-Todo Summary Assistant is a simple tool to manage, summarize, and track your tasks efficiently. It allows you to create, update, and delete todos, and provides a summary of pending tasks.
+Tech Stack
+Application
+  Java
+  Maven
+DevOps & Platform
+  Git (Source Control)
+  Docker (Containerization)
+  Jenkins (CI)
+  Kubernetes (Deployment)
+  GitOps (Deployment Strategy)
 
-## Features
+  1. Project Understanding & Local Execution Prerequisites
+     Java 17 
+     Maven 3.8+
+     Git
+     Docker
+    Clone Repo:
+      git clone https://github.com/Praj122/TodoSummaryAssistant.git
+      cd TodoSummaryAssistantBuild the Application
+   mvn clean package
+     Run Locally
+     mvn spring-boot:run
 
-- Add new todos
-- Update existing todos
-- Delete completed todos
-- Get a summary of all todos
+2. Containerization (Docker)
+    Key Design Choices
+    Multi-stage build to minimize image size
+    Non-root user for container security
+   Externalized configuration via environment variables
+   Optimized .dockerignore to reduce build context
+  Files Added
+    Dockerfile
+   .dockerignore
+   Build Image Locally
+   docker build -t todo-summary-assistant:latest .
+  Run Container
+3. Continuous Integration – Jenkins
+    CI Capabilities
+   Triggered on Git commits
+   Maven build & test
+  Docker image build
+  Image tagging using Git commit hash
+  Push to container registry
+Jenkinsfile Stages
+  Build & Test (Maven)
+  Docker Build
+  Docker Push
 
-## Installation
+🔐 All secrets (registry credentials, tokens) are stored in Jenkins Credentials, never hardcoded.
 
-<<<<<<< HEAD
-1. Clone the repository:
-```bash
-git clone https://github.com/sivag877/todo-summary-devops.git
-=======
->>>>>>> f4a8598
-=======
-* **Frontend:** HTML, CSS, Javascript, React, Axios(for API calls), 
-* **Backend:** Spring Boot (Java 17+), Maven
-* **Database:** MySQL (via Spring Data JPA and Hibernate)
-* **LLM:** Cohere API
-* **Messaging:** Slack Incoming Webhooks
-* **HTTP Client:** OkHttp (for Cohere and Slack API calls in backend)
+4. Kubernetes Deployment
+   Kubernetes Resources
+   Deployment.yml
+   Service.yml
+   ConfigMap.yml
+   Secret.yml
+Directory Structure
+  k8s/
+    ├── deployment.yaml
+    ├── service.yaml
+    ├── configmap.yaml
+    ├── secret.yaml
 
-## Setup Instructions
+Highlights
+Clean labels (app, env, version)
+Health checks to enable self-healing
+Resource limits to prevent noisy neighbor issues
 
-### Prerequisites
 
-* Java Development Kit (JDK) 17 or higher
-* Node.js and npm (or yarn)
-* MySQL Server running locally or accessible remotely
-* A Cohere API Key
-* A Slack Workspace and an Incoming Webhook URL
 
-### Backend Setup
+5. GitOps Deployment Model
+  GitOps Principles Used
+   CI does NOT deploy to Kubernetes
+   Kubernetes state is defined declaratively in Git
+   Deployment happens via Git reconciliation
+GitOps Flow
+  Jenkins builds & pushes Docker image
+  Image tag is updated in GitOps repo
+  GitOps controller (e.g., ArgoCD ) detects change
 
-1.  **Clone the repository:**
-    ```bash
-    git clone [https://github.com/your-username/todo-summary-assistant.git](https://github.com/your-username/todo-summary-assistant.git)
-    cd todo-summary-assistant/backend
-    ```
-2.  **Configure `application.properties`:**
-    Open `src/main/resources/application.properties` and update the following:
-    ```properties
-    spring.datasource.url=jdbc:mysql://localhost:3306/todo_db?createDatabaseIfNotExist=true
-    spring.datasource.username=root
-    spring.datasource.password=your_mysql_password_here # <-- IMPORTANT: Replace with your MySQL root password
-    ```
-3.  **Build and Run:**
-    ```bash
-    mvn clean install
-    mvn spring-boot:run
-    ```
-    The backend will start on `http://localhost:8080`.
+Directory
+  gitops/
+        ├── environments/
+        ├── dev/
+        │── prod/
 
-### Frontend Setup
 
-1.  **Navigate to the frontend directory:**
-    ```bash
-    cd ../frontend
-    ```
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    # or yarn install
-    ```
-3.  **Run the React application:**
-    ```bash
-    npm start
-    # or yarn start
-    ```
-    The frontend will open in your browser at `http://localhost:3000`.
+6. AWS Deployment (Optional – If Enabled)
 
-## LLM (Cohere) Setup
+⚡ AWS deployment provides extra scalability and production realism.
+AWS Components
+ Amazon EKS
+ IAM Roles for Service Accounts (IRSA)
+ VPC with private subnets
+ Security Groups
+ Security Best Practices
+ No hardcoded AWS credentials
+ IAM least privilege
+Private cluster networking
 
-1.  **Create a Cohere Account:** Visit [Cohere.ai](https://cohere.ai/) and sign up for a free account.
-2.  **Obtain API Key:** Once logged in, navigate to your dashboard or API keys section to find your API key.
-3.  **Update `application.properties`:** Paste your Cohere API key into `cohere.api.key` in the backend's `application.properties` file.
 
-## Slack Integration Setup
+📐 Architecture diagram and AWS explanation are included separately if AWS is used.
 
-1.  **Create a Slack App:**
-    * Go to [api.slack.com/apps](https://api.slack.com/apps).
-    * Click "Create New App" and choose "From scratch".
-    * Give your app a name (e.g., "Todo Summary Bot") and select your Slack workspace.
-2.  **Activate Incoming Webhooks:**
-    * From your app's settings page, navigate to "Features" -> "Incoming Webhooks".
-    * Toggle the "Activate Incoming Webhooks" switch to "On".
-    * Scroll down and click the "Add New Webhook to Workspace" button.
-    * Select the specific channel where you want the to-do summaries to be posted (e.g., `#general`, `#todos`, or a new channel).
-    * Click "Allow".
-3.  **Copy Webhook URL:**
-    * A unique Webhook URL will be generated. Copy this URL.
-4.  **Update `application.properties`:** Paste this URL into `slack.webhook.url` in the backend's `application.properties` file.
+7. Failure & Rollback Handling
+   Faulty production deployments
+   Application crashes
+   Jenkins outages
+  Secret leakage
+  Kubernetes node failures
 
-## Design/Architecture Decisions
 
-* **Separation of Concerns:** The project is cleanly separated into frontend (React) and backend (Spring Boot) directories, allowing independent development and deployment.
-* **RESTful API:** The backend exposes standard RESTful endpoints for managing todos, ensuring clear and predictable communication with the frontend.
-* **Spring Data JPA:** Leveraged for efficient and simplified database interactions with MySQL, reducing boilerplate code for data access.
-* **Service Layer:** Business logic (CRUD operations, LLM calls, Slack calls) is encapsulated within dedicated service classes, promoting modularity and testability.
-* **External API Integration:** `OkHttp` was chosen as a lightweight and efficient HTTP client for making external API calls to Cohere and Slack.
-* **CORS Configuration:** Explicit CORS configuration in Spring Boot ensures that the React frontend can communicate with the backend.
-* **Error Handling:** Basic error handling is implemented on both frontend and backend to provide user feedback and log issues.
-* **LLM Prompt Engineering:** A simple prompt is used for Cohere to instruct it on summarizing the list of to-do items. This can be further refined for better results.
-* **Notification System:** A simple notification component in React provides immediate feedback to the user about operations.
->>>>>>> 85d231b (Update README.md)
+
+8. Monitoring & Operations
+Includes:
+  Key metrics
+  Critical logs
+  Alerting strategy
+  Early failure detection
+
+
+
+Repository Structure
+.
+├── Dockerfile
+├── Jenkinsfile
+├── k8s/
+├── gitops/
+├── FAILURE_AND_ROLLBACK.md
+├── MONITORING_AND_OPERATIONS.md
+├── README.md
+└── src/
+
+
 
